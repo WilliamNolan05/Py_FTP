@@ -13,3 +13,7 @@ while True:
     client, addr = s.accept()
     msg = ("Thank you for connecting").encode()
     client.send(msg)
+    if str(client.recv(1024).decode()) == "USER":
+        print("User Command Was Selected")
+        status_code =("200").encode()
+        client.send(status_code)
