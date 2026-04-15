@@ -12,14 +12,13 @@ print(str(s.recv(1024).decode()))
 
 class Auth: 
     def PASS():
-          s.send("PASS".encode())
-          if str(s.recv(1024).decode()) == "200":
-               password = (prompt("Password: ")).encode()
-               s.send(password)
-               if str(s.recv(1024).decode()) == "230":
-                    print("Password Was Correct")
-               else:
-                    print(("Password Incorrect"))
+        if str(s.recv(1024).decode()) == "200":
+            password = (prompt("Password: ")).encode()
+            s.send(password)
+            if str(s.recv(1024).decode()) == "230":
+                print("Password Was Correct")
+            else:
+                print(("Password Incorrect"))
 
     def USER():
             s.send("USER".encode())
