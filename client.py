@@ -13,15 +13,20 @@ print(str(s.recv(1024).decode()))
 class Auth: 
     def PASS():
           s.send("PASS".encode())
-          
-          
-          
+          if str(s.recv(1024).decode()) == "200":
+               password = (prompt("Password: ")).encode()
+               s.send(password)
+               if str(s.recv(1024).decode()) == "230":
+                    print("Password Was Correct")
+               else:
+                    print(("Password Incorrect"))
+
     def USER():
             s.send("USER".encode())
-            if str(s.recv(1024).decode()) == "331":
+            if str(s.recv(1024).decode()) == "200":
                   username = (prompt("Username: ")).encode()
                   s.send(username)
-                  if str(s.recv(1024).decode()) == 'Username Correct':  
+                  if str(s.recv(1024).decode()) == "331":  
                     print("Username was correct")
                     Auth.PASS()
             return    
