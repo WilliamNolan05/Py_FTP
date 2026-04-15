@@ -28,6 +28,8 @@ class Auth:
                   if str(s.recv(1024).decode()) == "331":  
                     print("Username was correct")
                     Auth.PASS()
-            return    
+                  else:
+                       print("Username was incorrect")
+                       Auth.USER()
 
 Auth.USER()
