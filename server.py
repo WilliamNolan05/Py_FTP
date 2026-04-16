@@ -21,30 +21,28 @@ def Status_Code(status_code):
 class Auth:
     def USER():
         print("USER Command: ")
-        Status_Code("200")
         username = str("")
         while username != auth_user:
             username = client.recv(1024).decode()
             if username == auth_user:
                 Status_Code("331")
                 Auth.PASS()
+                Status_Code("200")
             else:
                 Status_Code("430")
                 client.send(("Incorrect Username").encode())
-                Auth.USER()
                 print('not working? ')
 
         
     
     def PASS():
         print("PASS Command: ")
-        Status_Code("200")
         password = client.recv(1024).decode()
         if password == auth_password:
             Status_Code("230")
+            client.send(("Correct Password").encode())
         else:
             client.send(("Incorrect Password").encode())
-            Auth.PASS()
 
 
 while True:
