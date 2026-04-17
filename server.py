@@ -30,19 +30,21 @@ class Auth:
                 Status_Code("200")
             else:
                 Status_Code("430")
-                client.send(("Incorrect Username").encode())
-                print('not working? ')
+                print('retry')
 
         
     
     def PASS():
         print("PASS Command: ")
-        password = client.recv(1024).decode()
-        if password == auth_password:
-            Status_Code("230")
-            client.send(("Correct Password").encode())
-        else:
-            client.send(("Incorrect Password").encode())
+        password = str("")
+        while password != auth_password:
+            password = client.recv(1024).decode()
+            if password == auth_password:
+                Status_Code("230")
+                print("correct!")
+            else:
+                Status_Code("430")
+                print('retry')
 
 
 while True:
