@@ -18,6 +18,7 @@ class Auth:
                 if str(s.recv(1024).decode()) == "230":  
                     print("Password was Correct")
                     status_code = "230"
+                    Menu.Welcome_Page()
                 else:
                     print("Password was incorrect")
 
@@ -33,5 +34,12 @@ class Auth:
                     Auth.PASS()
                 else:
                     print("Username was incorrect")
+
+class Menu:
+     def Welcome_Page():
+          f = open('banner.txt', 'r', encoding='utf-8')
+          file_contents = f.read()
+          print(file_contents)
+
 
 Auth.USER()

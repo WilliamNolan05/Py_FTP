@@ -29,7 +29,7 @@ class Auth:
                 Auth.PASS()
                 Status_Code("200")
             else:
-                Status_Code("430")
+                Status_Code("530")
                 print('retry')
 
         
@@ -43,13 +43,13 @@ class Auth:
                 Status_Code("230")
                 print("correct!")
             else:
-                Status_Code("430")
+                Status_Code("530")
                 print('retry')
 
 
 while True:
     client, addr = s.accept()
-    msg = ("Thank you for connecting! ").encode()
+    msg = ("Thank you for connecting!").encode()
     client.send(msg)
     if str(client.recv(1024).decode()) == "USER":
         Auth.USER()
