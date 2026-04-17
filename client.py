@@ -13,10 +13,17 @@ class Actions:
     def QUIT():
          quit()
 
+    def HELP():
+          f = open('help.txt', 'r', encoding='utf-8')
+          file_contents = f.read()
+          return file_contents
+          
+          
     def PWD():
          s.send(("PWD").encode())
          
 Commands = {'QUIT':Actions.QUIT,
+            'HELP':Actions.HELP,
             'PWD':Actions.PWD
             }
 

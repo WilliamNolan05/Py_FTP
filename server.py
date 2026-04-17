@@ -51,5 +51,6 @@ while True:
     client.send(msg)
     username = Auth.USER()
     password = Auth.PASS()
-    if username == 'tony' and password =='gabagool':
-        print('yes')
+    if username == auth_user and password == auth_password:
+        print('Hi')
+        
