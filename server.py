@@ -26,12 +26,10 @@ class Auth:
             username = client.recv(1024).decode()
             if username == auth_user:
                 Status_Code("331")
-                Auth.PASS()
-                Status_Code("200")
             else:
                 Status_Code("530")
                 print('retry')
-
+        return username
         
     
     def PASS():
@@ -45,11 +43,13 @@ class Auth:
             else:
                 Status_Code("530")
                 print('retry')
-
+        return password 
 
 while True:
     client, addr = s.accept()
     msg = ("Thank you for connecting!").encode()
     client.send(msg)
-    if str(client.recv(1024).decode()) == "USER":
-        Auth.USER()
+    username = Auth.USER()
+    password = Auth.PASS()
+    if username == 'tony' and password =='gabagool':
+        print('yes')

@@ -9,6 +9,17 @@ port = 12399
 s.connect(('127.0.0.1', port))
 print(str(s.recv(1024).decode()))
 
+class Actions:
+    def QUIT():
+         quit()
+
+    def PWD():
+         s.send(("PWD").encode())
+         
+Commands = {'QUIT':Actions.QUIT,
+            'PWD':Actions.PWD
+            }
+
 class Auth: 
     def PASS():
             status_code = "1"
@@ -23,7 +34,6 @@ class Auth:
                     print("Password was incorrect")
 
     def USER():
-            s.send("USER".encode())
             status_code = "1"
             while status_code != "331":
                 username = (prompt("Username: ")).encode()
@@ -44,9 +54,13 @@ class Menu:
         
     def Input_Loop():
          while True:
-             command = (prompt("tony> ")).encode()
-
-
-
+             command = Menu.Command_Parser()
+             if command in Commands:
+                  print(Commands[command]())
+    
+    def Command_Parser():
+             U_input = (prompt("tony> ")).split(" ")
+             command = U_input[0]
+             return command
 
 Auth.USER()
