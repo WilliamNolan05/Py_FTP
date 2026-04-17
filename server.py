@@ -54,3 +54,7 @@ while True:
     if username == auth_user and password == auth_password:
         print('Hi')
         
+
+
+
+thread = threading.Thread(target=Menu)
