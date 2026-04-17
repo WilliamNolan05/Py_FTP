@@ -36,10 +36,17 @@ class Auth:
                     print("Username was incorrect")
 
 class Menu:
-     def Welcome_Page():
+    def Welcome_Page():
           f = open('banner.txt', 'r', encoding='utf-8')
           file_contents = f.read()
           print(file_contents)
+          Menu.Input_Loop()
+        
+    def Input_Loop():
+         while True:
+             command = (prompt("tony> ")).encode()
+
+
 
 
 Auth.USER()
