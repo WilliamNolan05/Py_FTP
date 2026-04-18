@@ -1,6 +1,7 @@
 import socket 
 import threading
 import logging
+import os 
 
 port = 12399
 
@@ -17,11 +18,20 @@ auth_password = 'gabagool'
 
 def Status_Code(status_code):
     client.send((status_code).encode())
-
+    
 
 class Actions:
     def TEST():
-        s.send('TEST').encode()
+        client.send(('TEST').encode())
+        
+    def PWD():
+        cwd = os.getcwd()
+        client.send((cwd).encode())
+
+Commands = {
+            'TEST':Actions.TEST,
+            'PWD':Actions.PWD
+            }
 
 class Auth:
     def USER():
@@ -51,14 +61,18 @@ class Auth:
         return password 
     
 
-def Menu():
-    while True:
-        if client.recv(1024).decode() == "TEST":
-            print("TEST was selected")
-            client.send(("TEST").encode())
-            print("Jobs Done!")
-    
-
+class Menu:
+    def Input_Loop():
+         while True:
+             command = Menu.Command_Parser()
+             print(command)
+             if command in Commands:
+                  Commands[command]()
+                  
+    def Command_Parser():
+        S_input = ((client.recv(1024).decode()).split(" "))
+        command = S_input[0]
+        return command
 
 
 while True:
@@ -68,5 +82,5 @@ while True:
     username = Auth.USER()
     password = Auth.PASS()
     if username == auth_user and password == auth_password:
-        thread = threading.Thread(target=Menu)
+        thread = threading.Thread(target=Menu.Input_Loop)
         thread.start()

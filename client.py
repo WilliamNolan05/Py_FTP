@@ -19,10 +19,10 @@ class Actions:
           f = open('help.txt', 'r', encoding='utf-8')
           file_contents = f.read()
           return file_contents
-          
-          
+
     def PWD():
          s.send(("PWD").encode())
+         return (s.recv(1024).decode())
     
     def TEST():
          s.send(("TEST").encode())
