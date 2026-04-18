@@ -6,7 +6,9 @@ s = socket.socket()
 
 port = 12399
 
-s.connect(('127.0.0.1', port))
+addr = prompt("FTP Server IP: ")
+
+s.connect((addr, port))
 print(str(s.recv(1024).decode()))
 
 class Actions:
@@ -21,10 +23,15 @@ class Actions:
           
     def PWD():
          s.send(("PWD").encode())
+    
+    def TEST():
+         s.send(("TEST").encode())
+         return (s.recv(1024).decode())
          
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
-            'PWD':Actions.PWD
+            'PWD':Actions.PWD,
+            'TEST':Actions.TEST
             }
 
 class Auth: 

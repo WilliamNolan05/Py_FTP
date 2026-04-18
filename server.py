@@ -18,6 +18,11 @@ auth_password = 'gabagool'
 def Status_Code(status_code):
     client.send((status_code).encode())
 
+
+class Actions:
+    def TEST():
+        s.send('TEST').encode()
+
 class Auth:
     def USER():
         print("USER Command: ")
@@ -44,6 +49,17 @@ class Auth:
                 Status_Code("530")
                 print('retry')
         return password 
+    
+
+def Menu():
+    while True:
+        if client.recv(1024).decode() == "TEST":
+            print("TEST was selected")
+            client.send(("TEST").encode())
+            print("Jobs Done!")
+    
+
+
 
 while True:
     client, addr = s.accept()
@@ -52,9 +68,5 @@ while True:
     username = Auth.USER()
     password = Auth.PASS()
     if username == auth_user and password == auth_password:
-        print('Hi')
-        
-
-
-
-thread = threading.Thread(target=Menu)
+        thread = threading.Thread(target=Menu)
+        thread.start()
