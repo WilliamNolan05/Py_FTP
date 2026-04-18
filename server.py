@@ -4,7 +4,6 @@ import logging
 import os 
 
 port = 12399
-
 addr = '127.0.0.1'
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,72 +14,79 @@ s.listen(5)
 auth_user = 'tony'
 auth_password = 'gabagool'
 
+class Client_Session():
+    def __init__(self, client):
+        self.client = client
+        #Defines the List of commands that methods can use 
+        self.Commands = {
+            'TEST':self.TEST,
+            'PWD':self.PWD
+        }
+    #Function to send status codes
+    def Status_Code(self,status_code):
+        self.client.send((status_code).encode())
 
-def Status_Code(status_code):
-    client.send((status_code).encode())
-    
-
-class Actions:
-    def TEST():
-        client.send(('TEST').encode())
-        
-    def PWD():
-        cwd = os.getcwd()
-        client.send((cwd).encode())
-
-Commands = {
-            'TEST':Actions.TEST,
-            'PWD':Actions.PWD
-            }
-
-class Auth:
-    def USER():
+    #Gets user to input Username
+    def USER(self):
         print("USER Command: ")
         username = str("")
         while username != auth_user:
-            username = client.recv(1024).decode()
+            username = self.client.recv(1024).decode()
             if username == auth_user:
-                Status_Code("331")
+                self.Status_Code("331")
             else:
-                Status_Code("530")
+                self.Status_Code("530")
                 print('retry')
         return username
         
-    
-    def PASS():
+    #Gets user to input password
+    def PASS(self):
         print("PASS Command: ")
         password = str("")
         while password != auth_password:
-            password = client.recv(1024).decode()
+            password = self.client.recv(1024).decode()
             if password == auth_password:
-                Status_Code("230")
+                self.Status_Code("230")
                 print("correct!")
             else:
-                Status_Code("530")
+                self.Status_Code("530")
                 print('retry')
         return password 
-    
 
-class Menu:
-    def Input_Loop():
+    #Reads inputs and runs commands accordingly
+    def Input_Loop(self):
          while True:
-             command = Menu.Command_Parser()
+             command = self.Command_Parser()
              print(command)
-             if command in Commands:
-                  Commands[command]()
-                  
-    def Command_Parser():
-        S_input = ((client.recv(1024).decode()).split(" "))
+             if command in self.Commands:
+                  self.Commands[command]()
+    
+    #Welcomes client in and runs the authentication functions
+    def Client_Handler(self):
+        msg = ("Thank you for connecting!").encode()
+        self.client.send(msg)
+        username = self.USER()
+        password = self.PASS()
+        if username == auth_user and password == auth_password:
+            self.Input_Loop()
+
+
+    #Parses Commands in               
+    def Command_Parser(self):
+        S_input = ((self.client.recv(1024).decode()).split(" "))
         command = S_input[0]
         return command
+    #Will Remove at end, just used to test sending/recieving commands from client
+    def TEST(self):
+        self.client.send(('TEST').encode())
+    #PWD (Print Working Directory)
+    def PWD(self):
+        cwd = os.getcwd()
+        self.client.send((cwd).encode())
 
-
+#Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
 while True:
     client, addr = s.accept()
-    msg = ("Thank you for connecting!").encode()
-    client.send(msg)
-    username = Auth.USER()
-    password = Auth.PASS()
-    if username == auth_user and password == auth_password:
-        thread = threading.Thread(target=Menu.Input_Loop)
-        thread.start()
+    new_session = Client_Session(client)
+    thread = threading.Thread(target=new_session.Client_Handler)
+    thread.start()
