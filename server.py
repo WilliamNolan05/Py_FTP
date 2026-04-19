@@ -22,7 +22,8 @@ class Client_Session():
             'TEST':self.TEST,
             'PWD':self.PWD,
             'QUIT':self.QUIT,
-            'CWD':self.CWD
+            'CWD':self.CWD,
+            'LIST':self.LIST
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -93,12 +94,16 @@ class Client_Session():
         self.client.send((cwd).encode())
 
     def CWD(self, path):
-         os.chdir(path)
+        os.chdir(path)
 
     def QUIT(self, args):
         print("closing connection with client")
         self.Status_Code("600")
         self.client.close()
+    
+    def LIST(self, args):
+        contents = str(os.listdir())
+        self.client.send((contents).encode())
 
 
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 

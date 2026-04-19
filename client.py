@@ -35,13 +35,29 @@ class Actions:
         msg = ' '.join(str(val) for val in tup)
         s.send((msg).encode())
         return(f'Path changed to {path}')
-        
-         
+    
+    def LPWD(args):
+        cwd = os.getcwd()
+        return(cwd)
+    
+    def LCD(path):
+        os.chdir(path)
+    
+    def LLIST(args):
+        return os.listdir()
+    
+    def LIST(args):
+        s.send(("LIST").encode())
+        return (s.recv(1024).decode())
+    
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
             'PWD':Actions.PWD,
             'TEST':Actions.TEST,
-            'CWD':Actions.CWD
+            'CWD':Actions.CWD,
+            'LCD':Actions.LCD,
+            'LLIST':Actions.LLIST,
+            'LIST':Actions.LIST
             }
 
 class Auth: 
