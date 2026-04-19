@@ -1,6 +1,6 @@
 import socket 
 from prompt_toolkit import prompt
-import threading 
+import os
 
 s = socket.socket()
 
@@ -12,28 +12,36 @@ s.connect((addr, port))
 print(str(s.recv(1024).decode()))
 
 class Actions:
-    def QUIT():
-         s.send(("QUIT").encode())
-         if (s.recv(1024).decode()) == "600":
+    def QUIT(args):
+        s.send(("QUIT").encode())
+        if (s.recv(1024).decode()) == "600":
             quit()
 
-    def HELP():
-          f = open('help.txt', 'r', encoding='utf-8')
-          file_contents = f.read()
-          return file_contents
+    def HELP(args):
+        f = open('help.txt', 'r', encoding='utf-8')
+        file_contents = f.read()
+        return file_contents
 
-    def PWD():
-         s.send(("PWD").encode())
-         return (s.recv(1024).decode())
+    def PWD(args):
+        s.send(("PWD").encode())
+        return (s.recv(1024).decode())
     
-    def TEST():
-         s.send(("TEST").encode())
-         return (s.recv(1024).decode())
+    def TEST(args):
+        s.send(("TEST").encode())
+        return (s.recv(1024).decode())
+    
+    def CWD(path):
+        tup = (("CWD", path))
+        msg = ' '.join(str(val) for val in tup)
+        s.send((msg).encode())
+        return(f'Path changed to {path}')
+        
          
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
             'PWD':Actions.PWD,
-            'TEST':Actions.TEST
+            'TEST':Actions.TEST,
+            'CWD':Actions.CWD
             }
 
 class Auth: 
@@ -70,13 +78,18 @@ class Menu:
         
     def Input_Loop():
          while True:
-             command = Menu.Command_Parser()
+             (command, args) = Menu.Command_Parser()
+             
              if command in Commands:
-                  print(Commands[command]())
+                  print(Commands[command](args))
     
     def Command_Parser():
-             U_input = (prompt("tony> ")).split(" ")
-             command = U_input[0]
-             return command
+            U_input = (prompt("tony> ")).split(" ")
+            command = U_input[0]
+            args = ""
+            if len(U_input) > 1:
+                args = U_input[1]
+            return (command, args)
+
 
 Auth.USER()

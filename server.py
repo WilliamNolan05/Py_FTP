@@ -21,7 +21,8 @@ class Client_Session():
         self.Commands = {
             'TEST':self.TEST,
             'PWD':self.PWD,
-            'QUIT':self.QUIT
+            'QUIT':self.QUIT,
+            'CWD':self.CWD
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -58,10 +59,10 @@ class Client_Session():
     def Input_Loop(self):
         try:
             while True:
-                command = self.Command_Parser()
+                (command, args) = self.Command_Parser()
                 print(command)
                 if command in self.Commands:
-                    self.Commands[command]()
+                    self.Commands[command](args)
         except:
             self.client.close()
     
@@ -79,15 +80,22 @@ class Client_Session():
     def Command_Parser(self):
         S_input = ((self.client.recv(1024).decode()).split(" "))
         command = S_input[0]
-        return command
+        args = ""
+        if len(S_input) > 1:
+            args = S_input[1]
+        return (command, args)
     #Will Remove at end, just used to test sending/recieving commands from client
-    def TEST(self):
+    def TEST(self, args):
         self.client.send(('TEST').encode())
     #PWD (Print Working Directory)
-    def PWD(self):
+    def PWD(self, args):
         cwd = os.getcwd()
         self.client.send((cwd).encode())
-    def QUIT(self):
+
+    def CWD(self, path):
+         os.chdir(path)
+
+    def QUIT(self, args):
         print("closing connection with client")
         self.Status_Code("600")
         self.client.close()
