@@ -13,7 +13,9 @@ print(str(s.recv(1024).decode()))
 
 class Actions:
     def QUIT():
-         quit()
+         s.send(("QUIT").encode())
+         if (s.recv(1024).decode()) == "600":
+            quit()
 
     def HELP():
           f = open('help.txt', 'r', encoding='utf-8')

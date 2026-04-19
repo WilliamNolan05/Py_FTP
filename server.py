@@ -20,7 +20,8 @@ class Client_Session():
         #Defines the List of commands that methods can use 
         self.Commands = {
             'TEST':self.TEST,
-            'PWD':self.PWD
+            'PWD':self.PWD,
+            'QUIT':self.QUIT
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -55,11 +56,14 @@ class Client_Session():
 
     #Reads inputs and runs commands accordingly
     def Input_Loop(self):
-         while True:
-             command = self.Command_Parser()
-             print(command)
-             if command in self.Commands:
-                  self.Commands[command]()
+        try:
+            while True:
+                command = self.Command_Parser()
+                print(command)
+                if command in self.Commands:
+                    self.Commands[command]()
+        except:
+            self.client.close()
     
     #Welcomes client in and runs the authentication functions
     def Client_Handler(self):
@@ -83,6 +87,11 @@ class Client_Session():
     def PWD(self):
         cwd = os.getcwd()
         self.client.send((cwd).encode())
+    def QUIT(self):
+        print("closing connection with client")
+        self.Status_Code("600")
+        self.client.close()
+
 
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
 while True:
