@@ -50,6 +50,10 @@ class Actions:
         s.send(("LIST").encode())
         return (s.recv(1024).decode())
     
+    def PASV(args):
+         s.send("PASV").encode()
+         return (s.recv(1024).decode())
+    
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
             'PWD':Actions.PWD,

@@ -23,7 +23,8 @@ class Client_Session():
             'PWD':self.PWD,
             'QUIT':self.QUIT,
             'CWD':self.CWD,
-            'LIST':self.LIST
+            'LIST':self.LIST,
+            'PASV':self.PASV
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -104,6 +105,11 @@ class Client_Session():
     def LIST(self, args):
         contents = str(os.listdir())
         self.client.send((contents).encode())
+
+    def PASV(self, args):
+        d = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        d.bind((addr,0))
+        d.listen(5)
 
 
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
