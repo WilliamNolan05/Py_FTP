@@ -3,6 +3,7 @@ from prompt_toolkit import prompt
 import os
 
 s = socket.socket()
+data_stream = None
 
 port = 12399
 
@@ -50,18 +51,19 @@ class Actions:
         s.send(("LIST").encode())
         return (s.recv(1024).decode())
     
-    def PASV(self, args):
+    def PASV(args):
         s.send(("PASV").encode())
         d_info = (s.recv(1024).decode())
         ip, port = d_info.split(" ")
         port = int(port)
 
-        self.data_socket = socket.socket()
+        data_socket = socket.socket()
          
-        self.data_socket.connect((ip, port))
-        self.data_socket.send(('Connected').encode())
+        data_socket.connect((ip, port))
+        data_socket.send(('Connected').encode())
 
-        data_stream = Data_Stream(None)
+        global data_stream
+        data_stream = Data_Stream(data_socket)
         return('Data Connection Established')
     
 
@@ -75,7 +77,7 @@ class Data_Stream:
         return("RETR")
         
     def STOR(self, args):
-         s.send(("RETR").encode())
+         s.send(("STOR").encode())
          return("STOR")
     
 Commands = {'QUIT':Actions.QUIT,
@@ -87,8 +89,8 @@ Commands = {'QUIT':Actions.QUIT,
             'LLIST':Actions.LLIST,
             'LIST':Actions.LIST,
             'PASV':Actions.PASV,
-            'RETR':Data_Stream.RETR,
-            'STOR':Data_Stream.STOR
+            'RETR': lambda args: data_stream.RETR(args),
+            'STOR': lambda args: data_stream.STOR(args),
             }
 
 class Auth: 
