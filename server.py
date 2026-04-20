@@ -27,7 +27,7 @@ class Client_Session():
             'CWD':self.CWD,
             'LIST':self.LIST,
             'PASV':self.PASV,
-            'RERT':self.RETR
+            'RETR':self.RETR
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -126,9 +126,17 @@ class Client_Session():
         
         print(self.data_conn.recv(1024).decode())
     
-    def RETR():
-        print("RETR")
-        
+    def RETR(self, req_file):
+        self.client.send(("150").encode())
+        with open(req_file, "rb") as file:
+            while True: 
+                chunk = file.read(8192)
+                if not chunk:
+                    break
+                self.data_conn.sendall(chunk)
+            self.data_conn.close()
+        self.client.send(("226").encode())
+            
         
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
 while True:

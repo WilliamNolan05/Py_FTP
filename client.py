@@ -72,9 +72,27 @@ class Data_Stream:
     def __init__(self, data_socket):
          self.data_socket = data_socket
         
-    def RETR(self, args):
-        s.send(("RETR").encode())
-        return("RETR")
+    def RETR(self, filename):
+
+        tup = (("RETR", filename))
+        msg = ' '.join(str(val) for val in tup)
+        s.send((msg).encode())
+        if (s.recv(1024).decode()) == "150":
+            with open (filename, "wb") as file:
+                while True:
+                    chunk = self.data_socket.recv(8192)
+
+                    if not chunk:
+                        break 
+                    file.write(chunk)
+        if (s.recv(1024).decode()) == "226":
+            return(f"{filename} has been copied from ftp server")
+    
+    def CWD(path):
+        tup = (("CWD", path))
+        msg = ' '.join(str(val) for val in tup)
+        s.send((msg).encode())
+        return(f'Path changed to {path}')   
         
     def STOR(self, args):
          s.send(("STOR").encode())
@@ -83,14 +101,15 @@ class Data_Stream:
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
             'PWD':Actions.PWD,
+            'LPWD':Actions.LPWD,
             'TEST':Actions.TEST,
             'CWD':Actions.CWD,
             'LCD':Actions.LCD,
             'LLIST':Actions.LLIST,
             'LIST':Actions.LIST,
             'PASV':Actions.PASV,
-            'RETR': lambda args: data_stream.RETR(args),
-            'STOR': lambda args: data_stream.STOR(args),
+            'RETR': lambda args: data_stream.RETR(args) if data_stream is not None else print("Please run PASV first"),
+            'STOR': lambda args: data_stream.STOR(args) if data_stream is not None else print("Please run PASV first")
             }
 
 class Auth: 
