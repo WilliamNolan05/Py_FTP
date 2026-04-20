@@ -26,7 +26,8 @@ class Client_Session():
             'QUIT':self.QUIT,
             'CWD':self.CWD,
             'LIST':self.LIST,
-            'PASV':self.PASV
+            'PASV':self.PASV,
+            'RERT':self.RETR
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -124,6 +125,9 @@ class Client_Session():
         self.data_conn, addr = d.accept()
         
         print(self.data_conn.recv(1024).decode())
+    
+    def RETR():
+        print("RETR")
         
         
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 

@@ -50,19 +50,33 @@ class Actions:
         s.send(("LIST").encode())
         return (s.recv(1024).decode())
     
-    def PASV(args):
+    def PASV(self, args):
         s.send(("PASV").encode())
         d_info = (s.recv(1024).decode())
         ip, port = d_info.split(" ")
         port = int(port)
 
-        d = socket.socket()
+        self.data_socket = socket.socket()
          
-        d.connect((ip, port))
-        d.send(('Connected').encode())
-        
-        
+        self.data_socket.connect((ip, port))
+        self.data_socket.send(('Connected').encode())
 
+        data_stream = Data_Stream(None)
+        return('Data Connection Established')
+    
+
+class Data_Stream:
+
+    def __init__(self, data_socket):
+         self.data_socket = data_socket
+        
+    def RETR(self, args):
+        s.send(("RETR").encode())
+        return("RETR")
+        
+    def STOR(self, args):
+         s.send(("RETR").encode())
+         return("STOR")
     
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
@@ -72,7 +86,9 @@ Commands = {'QUIT':Actions.QUIT,
             'LCD':Actions.LCD,
             'LLIST':Actions.LLIST,
             'LIST':Actions.LIST,
-            'PASV':Actions.PASV
+            'PASV':Actions.PASV,
+            'RETR':Data_Stream.RETR,
+            'STOR':Data_Stream.STOR
             }
 
 class Auth: 
