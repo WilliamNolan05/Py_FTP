@@ -17,6 +17,7 @@ auth_password = 'gabagool'
 class Client_Session():
     def __init__(self, client):
         self.client = client
+        self.data_socket = None
         #Defines the List of commands that methods can use 
         self.Commands = {
             'TEST':self.TEST,
@@ -107,11 +108,18 @@ class Client_Session():
         self.client.send((contents).encode())
 
     def PASV(self, args):
+        data_ip = '127.0.0.1'
         d = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        d.bind((addr,0))
-        d.listen(5)
-
-
+        self.data_socket = d
+        self.data_socket.bind((data_ip,0))
+        (ip, port) = d.getsockname()
+        d.listen(5) 
+        print(ip, port)
+        tup = (ip, port)
+        d_info = ' '.join(str(item) for item in tup)
+        self.client.send((d_info).encode())
+        
+        
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
 while True:
     client, addr = s.accept()

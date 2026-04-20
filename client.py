@@ -51,8 +51,18 @@ class Actions:
         return (s.recv(1024).decode())
     
     def PASV(args):
-         s.send("PASV").encode()
-         return (s.recv(1024).decode())
+        s.send(("PASV").encode())
+        d_info = (s.recv(1024).decode())
+        ip, port = d_info.split(" ")
+        port = int(port)
+
+        d = socket.socket()
+         
+        d.connect((ip, port))
+        d.send(('Connected').encode())
+        return(port)
+        
+
     
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
@@ -61,7 +71,8 @@ Commands = {'QUIT':Actions.QUIT,
             'CWD':Actions.CWD,
             'LCD':Actions.LCD,
             'LLIST':Actions.LLIST,
-            'LIST':Actions.LIST
+            'LIST':Actions.LIST,
+            'PASV':Actions.PASV
             }
 
 class Auth: 
