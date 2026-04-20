@@ -18,6 +18,7 @@ class Client_Session():
     def __init__(self, client):
         self.client = client
         self.data_socket = None
+        self.data_conn = None
         #Defines the List of commands that methods can use 
         self.Commands = {
             'TEST':self.TEST,
@@ -114,10 +115,15 @@ class Client_Session():
         self.data_socket.bind((data_ip,0))
         (ip, port) = d.getsockname()
         d.listen(5) 
-        print(ip, port)
+        
+        
         tup = (ip, port)
         d_info = ' '.join(str(item) for item in tup)
         self.client.send((d_info).encode())
+        
+        self.data_conn, addr = d.accept()
+        
+        print(self.data_conn.recv(1024).decode())
         
         
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
