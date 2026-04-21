@@ -1,4 +1,10 @@
-# Py_FTP
-My own attempt at creating an ftp server from first principles in python 
+### Py_FTP
+FTP Server + Client made in python. 
 
-My only experience with python programming until now is with a basic api weather app that displays the temperature for an inputted city, and a tcp messaging application using the socket library, so this is a big step up for me, and might take me some time!
+## Spec
+FTP server following [RFC 959](https://datatracker.ietf.org/doc/html/rfc959)
+Basic RETR and STOR working over data socket, all other commands take place over control socket. 
+
+## Why?? 
+I wanted to learn Socket Programming, so I created this FTP server from scratch, with 0 AI gen code. 
+
