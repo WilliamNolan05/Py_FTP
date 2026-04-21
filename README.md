@@ -1,5 +1,5 @@
 # Py_FTP
-## FTP Server + Client made in python. 
+FTP Server + Client made in python. 
 
 ## Spec
 FTP server following [RFC 959](https://datatracker.ietf.org/doc/html/rfc959)
