@@ -1,6 +1,12 @@
 import socket 
 from prompt_toolkit import prompt
 import os
+import sys
+
+def resource_path(filename):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, filename)
+    return filename
 
 s = socket.socket()
 data_stream = None
@@ -19,7 +25,7 @@ class Actions:
             quit()
 
     def HELP(args):
-        f = open('help.txt', 'r', encoding='utf-8')
+        f = open(resource_path('help.txt'), 'r', encoding='utf-8')
         file_contents = f.read()
         return file_contents
 
@@ -177,7 +183,7 @@ class Auth:
 
 class Menu:
     def Welcome_Page():
-          f = open('banner.txt', 'r', encoding='utf-8')
+          f = open(resource_path('banner.txt'), 'r', encoding='utf-8')
           file_contents = f.read()
           print(file_contents)
           Menu.Input_Loop()
