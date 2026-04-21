@@ -87,16 +87,27 @@ class Data_Stream:
                     file.write(chunk)
         if (s.recv(1024).decode()) == "226":
             return(f"{filename} has been copied from ftp server")
+        
+    def STOR(self, filename):
+        tup = (("STOR", filename))
+        msg = ' '.join(str(val) for val in tup)
+        s.send((msg).encode())
+
+        with open(filename, "rb") as file:
+            while True: 
+                chunk = file.read(8192)
+                if not chunk:
+                    break   
+                self.data_socket.sendall(chunk)
+            self.data_socket.close()
+        return(f"{filename} has been copied to the server")
     
     def CWD(path):
         tup = (("CWD", path))
         msg = ' '.join(str(val) for val in tup)
         s.send((msg).encode())
         return(f'Path changed to {path}')   
-        
-    def STOR(self, args):
-         s.send(("STOR").encode())
-         return("STOR")
+    
     
 Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,

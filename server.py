@@ -27,7 +27,8 @@ class Client_Session():
             'CWD':self.CWD,
             'LIST':self.LIST,
             'PASV':self.PASV,
-            'RETR':self.RETR
+            'RETR':self.RETR,
+            'STOR':self.STOR
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -136,7 +137,16 @@ class Client_Session():
                 self.data_conn.sendall(chunk)
             self.data_conn.close()
         self.client.send(("226").encode())
-            
+        
+    def STOR(self, filename):
+        with open (filename, "wb") as file:
+                while True:
+                    chunk = self.data_conn.recv(8192)
+
+                    if not chunk:
+                        break 
+                    file.write(chunk)
+        return(f"{filename} has been copied from client")
         
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
 while True:
