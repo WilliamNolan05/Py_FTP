@@ -15,7 +15,7 @@ print(str(s.recv(1024).decode()))
 class Actions:
     def QUIT(args):
         s.send(("QUIT").encode())
-        if (s.recv(1024).decode()) == "600":
+        if (s.recv(1024).decode()) == "221":
             quit()
 
     def HELP(args):
@@ -25,10 +25,6 @@ class Actions:
 
     def PWD(args):
         s.send(("PWD").encode())
-        return (s.recv(1024).decode())
-    
-    def TEST(args):
-        s.send(("TEST").encode())
         return (s.recv(1024).decode())
     
     def CWD(path):
@@ -50,6 +46,28 @@ class Actions:
     def LIST(args):
         s.send(("LIST").encode())
         return (s.recv(1024).decode())
+    
+    def DELE(filename):
+        tup = (("DELE", filename))
+        msg = ' '.join(str(val) for val in tup)
+        s.send((msg).encode())
+        return(f'{filename} deleted ')
+    
+    def CDUP(args):
+        s.send(("CDUP").encode())
+        return("moved up a directory")
+    
+    def MKD(dirname):
+        tup = (("MKD", dirname))
+        msg = ' '.join(str(val) for val in tup)
+        s.send((msg).encode())
+        return(f'directory {dirname} created ')
+    
+    def RMD(dirname):
+        tup = (("RMD", dirname))
+        msg = ' '.join(str(val) for val in tup)
+        s.send((msg).encode())
+        return(f'directory {dirname} removed')   
     
     def PASV(args):
         s.send(("PASV").encode())
@@ -93,14 +111,20 @@ class Data_Stream:
         msg = ' '.join(str(val) for val in tup)
         s.send((msg).encode())
 
-        with open(filename, "rb") as file:
-            while True: 
-                chunk = file.read(8192)
-                if not chunk:
-                    break   
-                self.data_socket.sendall(chunk)
-            self.data_socket.close()
-        return(f"{filename} has been copied to the server")
+        if (s.recv(1024).decode()) == "150":
+            with open(filename, "rb") as file:
+                while True: 
+                    chunk = file.read(8192)
+                    if not chunk:
+                        break   
+                    self.data_socket.sendall(chunk)
+                self.data_socket.close()
+                self.data_socket = None
+        else: 
+            return("something went wrong in file transfer")
+        if (s.recv(1024).decode()) == "226":
+            return(f"{filename} has been copied to the server")
+        else: return("something went wrong in file transfer")
     
     def CWD(path):
         tup = (("CWD", path))
@@ -113,12 +137,15 @@ Commands = {'QUIT':Actions.QUIT,
             'HELP':Actions.HELP,
             'PWD':Actions.PWD,
             'LPWD':Actions.LPWD,
-            'TEST':Actions.TEST,
             'CWD':Actions.CWD,
             'LCD':Actions.LCD,
             'LLIST':Actions.LLIST,
             'LIST':Actions.LIST,
             'PASV':Actions.PASV,
+            'RMD':Actions.RMD,
+            'MKD':Actions.MKD,
+            'CDUP':Actions.CDUP,
+            'DELE':Actions.DELE,
             'RETR': lambda args: data_stream.RETR(args) if data_stream is not None else print("Please run PASV first"),
             'STOR': lambda args: data_stream.STOR(args) if data_stream is not None else print("Please run PASV first")
             }

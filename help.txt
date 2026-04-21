@@ -1,1 +1,27 @@
 QUIT: Quits the Program
+
+PWD: Prints the working directory on the server
+
+LPWD: Prints the working directory on the client machine 
+
+CWD: Changes the working directory to provided directory, on the server. 
+
+LCD: Changes the working directory to provided directory, on the client. 
+
+LIST: Lists the files in current directory on the server.
+
+LLIST: Lists the files in current directory on the client side. 
+
+RMD: Removes directory on server.
+
+MKD: Makes directory on server.
+
+CDUP: Moves up one directory on server.
+
+DELE: Deletes a file on server.
+
+PASV: Opens up data connection between server and client, must be ran before RETR or STOR.
+
+RETR: Retrieves a file from the server and copies it to the client.
+
+STOR: Sends a copy of file from client to server. 

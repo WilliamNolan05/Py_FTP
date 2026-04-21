@@ -1,34 +1,38 @@
 import socket 
 import threading
 import logging
+from prompt_toolkit import prompt
 import os 
 
 port = 12399
-addr = '127.0.0.1'
+addr = str(prompt("Ip Address: "))
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 s.bind((addr,port))
 s.listen(5)
 
-auth_user = 'tony'
-auth_password = 'gabagool'
+auth_user = str(prompt("Username: "))
+auth_password = str(prompt("Password: "))
 
 class Client_Session():
     def __init__(self, client):
         self.client = client
         self.data_socket = None
         self.data_conn = None
-        #Defines the List of commands that methods can use 
+        #Defines the List of commands that methods can use
         self.Commands = {
-            'TEST':self.TEST,
             'PWD':self.PWD,
             'QUIT':self.QUIT,
             'CWD':self.CWD,
             'LIST':self.LIST,
             'PASV':self.PASV,
             'RETR':self.RETR,
-            'STOR':self.STOR
+            'STOR':self.STOR,
+            'DELE':self.DELE,
+            'CDUP':self.CDUP,
+            'MKD':self.MKD,
+            'RMD':self.RMD
         }
     #Function to send status codes
     def Status_Code(self,status_code):
@@ -59,7 +63,7 @@ class Client_Session():
             else:
                 self.Status_Code("530")
                 print('retry')
-        return password 
+        return password
 
     #Reads inputs and runs commands accordingly
     def Input_Loop(self):
@@ -90,9 +94,7 @@ class Client_Session():
         if len(S_input) > 1:
             args = S_input[1]
         return (command, args)
-    #Will Remove at end, just used to test sending/recieving commands from client
-    def TEST(self, args):
-        self.client.send(('TEST').encode())
+    
     #PWD (Print Working Directory)
     def PWD(self, args):
         cwd = os.getcwd()
@@ -100,10 +102,22 @@ class Client_Session():
 
     def CWD(self, path):
         os.chdir(path)
+    
+    def CDUP(self, args):
+        os.chdir("..")
+    
+    def DELE(self, filename):
+        os.remove(filename)
+
+    def MKD(self, dirname):
+        os.makedirs(dirname)
+    
+    def RMD(self, dirname):
+        os.removedirs(dirname)
 
     def QUIT(self, args):
         print("closing connection with client")
-        self.Status_Code("600")
+        self.Status_Code("221")
         self.client.close()
     
     def LIST(self, args):
@@ -111,41 +125,48 @@ class Client_Session():
         self.client.send((contents).encode())
 
     def PASV(self, args):
-        data_ip = '127.0.0.1'
+        if self.data_socket is not None:
+            self.data_socket.close()
+            self.data_socket = None
+            
+        data_ip = addr
         d = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.data_socket = d
         self.data_socket.bind((data_ip,0))
         (ip, port) = d.getsockname()
-        d.listen(5) 
+        d.listen(5)
         
         
         tup = (ip, port)
         d_info = ' '.join(str(item) for item in tup)
         self.client.send((d_info).encode())
         
-        self.data_conn, addr = d.accept()
+        self.data_conn, dat_addr = d.accept()
         
         print(self.data_conn.recv(1024).decode())
     
     def RETR(self, req_file):
         self.client.send(("150").encode())
         with open(req_file, "rb") as file:
-            while True: 
+            while True:
                 chunk = file.read(8192)
                 if not chunk:
                     break
                 self.data_conn.sendall(chunk)
             self.data_conn.close()
+            self.data_conn = None
         self.client.send(("226").encode())
         
     def STOR(self, filename):
+        self.client.send(("150").encode())
         with open (filename, "wb") as file:
                 while True:
                     chunk = self.data_conn.recv(8192)
 
                     if not chunk:
-                        break 
+                        break
                     file.write(chunk)
+        self.client.send(("226").encode())
         return(f"{filename} has been copied from client")
         
 #Main loop that accepts clients, creates a new session object for them and runs it on a seperate thread. 
