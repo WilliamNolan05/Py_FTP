@@ -1,4 +1,4 @@
-### Py_FTP
+# Py_FTP
 FTP Server + Client made in python. 
 
 ## Spec
