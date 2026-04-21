@@ -78,6 +78,7 @@ class Actions:
     def PASV(args):
         s.send(("PASV").encode())
         d_info = (s.recv(1024).decode())
+        print(f"PASV received: '{d_info}'")
         ip, port = d_info.split(" ")
         port = int(port)
 

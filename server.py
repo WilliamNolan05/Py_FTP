@@ -6,6 +6,7 @@ import os
 
 port = 12399
 addr = str(prompt("Ip Address: "))
+server_ip = addr
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -129,7 +130,7 @@ class Client_Session():
             self.data_socket.close()
             self.data_socket = None
             
-        data_ip = addr
+        data_ip = server_ip
         d = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.data_socket = d
         self.data_socket.bind((data_ip,0))
